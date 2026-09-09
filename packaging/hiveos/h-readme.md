@@ -1,6 +1,6 @@
-# quanminer — official Quantus quantus-miner for HiveOS
+# quanminer — third-party Quantus quantus-miner for HiveOS
 
-This package wraps the **unmodified official `quantus-miner`** (linux-x86_64,
+This package wraps the **unmodified third-party `quantus-miner`** (linux-x86_64,
 from https://github.com/Quantus-Network/quantus-miner/releases) with the
 HiveOS custom-miner integration scripts. The binary's SHA-256 is recorded in
 the release notes; verify it against the upstream release asset.

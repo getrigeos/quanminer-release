@@ -31,5 +31,5 @@ See `packaging/hiveos/h-readme.md` (also shipped inside the package).
 ## Build
 
 ```bash
-./scripts/package-hiveos-release.sh <official-quantus-miner-linux-x86_64> dist/
+./scripts/package-hiveos-release.sh <upstream-quantus-miner-linux-x86_64> dist/
 ```
