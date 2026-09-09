@@ -3,7 +3,7 @@
 This package wraps the **unmodified official `quantus-miner`** (linux-x86_64,
 from https://github.com/Quantus-Network/quantus-miner/releases) with the
 HiveOS custom-miner integration scripts. The binary's SHA-256 is recorded in
-the release notes; verify it against the official release asset.
+the release notes; verify it against the upstream release asset.
 
 quantus-miner talks **QUIC over UDP** to the pool. Standard TCP firewalls do
 not apply; make sure outbound UDP to the pool port is allowed.
@@ -25,7 +25,7 @@ certificate by SHA-256 fingerprint instead of using CA certificates. Your
 pool's connection page publishes it. An `--tls-cert-sha256 <fp>` in Extra
 config arguments overrides the Password field.
 
-Hostnames in the Pool URL are resolved to an IP at miner start (the official
+Hostnames in the Pool URL are resolved to an IP at miner start (the upstream
 binary only accepts `IP:PORT`).
 
 ## InnovLab pool quick values

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the canonical quanminer-<version>.tar.gz HiveOS package around the
-# unmodified official quantus-miner linux binary.
+# unmodified upstream quantus-miner linux binary.
 set -euo pipefail
 [[ $# -ge 1 && $# -le 2 ]] || { echo 'usage: package-hiveos-release.sh <quantus-miner-binary> [output-dir]' >&2; exit 2; }
 for tool in bash gzip install sha256sum tar; do

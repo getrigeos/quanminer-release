@@ -2,7 +2,7 @@
 # HiveOS sources this file after wallet.conf and calls miner_ver/miner_config_gen.
 # The generated file is NUL-delimited so credentials are never eval'd.
 #
-# Flight-sheet mapping for the official quantus-miner (QUIC over UDP):
+# Flight-sheet mapping for the upstream quantus-miner (QUIC over UDP):
 #   Pool URL           -> --node-addr  (host:port; quic+udp:// prefix accepted;
 #                         a hostname is resolved at start time by h-run.sh)
 #   Wallet template    -> --auth-token (use %WAL%.%WORKER_NAME%)

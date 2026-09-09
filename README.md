@@ -1,13 +1,13 @@
 # quanminer-release
 
-HiveOS packaging of the **official Quantus [`quantus-miner`](https://github.com/Quantus-Network/quantus-miner/releases)** (QUIC/UDP).
+HiveOS packaging of the **third-party [`quantus-miner`](https://github.com/Quantus-Network/quantus-miner/releases)** (QUIC/UDP).
 The upstream project ships no HiveOS integration; this repository wraps the
-unmodified official linux-x86_64 binary with HiveOS custom-miner scripts
+unmodified upstream linux-x86_64 binary with HiveOS custom-miner scripts
 (`h-config.sh` / `h-run.sh` / `h-stats.sh` / `h-manifest.conf`).
 
-**The miner binary is byte-identical to the official release asset** — its
+**The miner binary is byte-identical to the upstream release asset** — its
 SHA-256 is published in every release here (`quantus-miner-linux-x86_64.sha256.upstream`)
-and can be verified against the official GitHub release.
+and can be verified against the upstream GitHub release.
 
 ## Use in HiveOS
 
