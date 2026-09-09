@@ -18,7 +18,7 @@ not apply; make sure outbound UDP to the pool port is allowed.
 | Wallet and worker template | `%WAL%.%WORKER_NAME%` |
 | Pool URL | your pool's QUIC endpoint, e.g. `qminer.innovlab.cc:17601` |
 | Password | the pool's TLS certificate SHA-256 fingerprint (64 hex chars, from the pool's connection page) |
-| Extra config arguments | optional passthrough, e.g. `--cpu-workers 0` |
+| Extra config arguments | usually leave blank (uses all GPUs + CPU); e.g. `--gpu-devices 2` to cap cards, `--cpu-workers 0` for pure GPU |
 
 The Password field is **required**: quantus-miner pins the pool's QUIC
 certificate by SHA-256 fingerprint instead of using CA certificates. Your

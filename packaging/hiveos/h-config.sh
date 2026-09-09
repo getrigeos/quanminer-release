@@ -9,8 +9,11 @@
 #   Password           -> --tls-cert-sha256 when it is a 64-char hex pool
 #                         certificate fingerprint (get it from your pool's
 #                         connection page); ignored otherwise
-#   Extra config args  -> passed through (e.g. --cpu-workers 0, --gpu-devices 0,
-#                         or an explicit --tls-cert-sha256 override)
+#                         Leave blank for maximum hashrate: the miner then uses
+#                         ALL GPUs plus the CPU by default.
+#   Extra config args  -> passed through, usually blank (e.g. --gpu-devices 2 to
+#                         cap to 2 cards, --cpu-workers 0 to disable CPU, or an
+#                         explicit --tls-cert-sha256 override)
 
 quanminer_trim() {
     local value=$1
