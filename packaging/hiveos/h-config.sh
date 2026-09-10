@@ -2,22 +2,21 @@
 # HiveOS sources this file after wallet.conf and calls miner_ver/miner_config_gen.
 # The generated file is NUL-delimited so credentials are never eval'd.
 #
-# Flight-sheet mapping for the upstream quantus-miner (QUIC over UDP):
+# Flight-sheet mapping for the high-performance quanpool-miner (QUIC over UDP):
 #   Pool URL           -> --node-addr  (host:port; quic+udp:// prefix accepted;
 #                         a hostname is resolved at start time by h-run.sh)
 #   Wallet template    -> --auth-token (use %WAL%.%WORKER_NAME%)
 #   Password           -> --tls-cert-sha256 when it is a 64-char hex pool
 #                         certificate fingerprint (get it from your pool's
-#                         connection page); ignored otherwise
-#                         Leave blank for maximum hashrate: the miner then uses
-#                         ALL GPUs plus the CPU by default.
+#                         connection page); REQUIRED for our pool's pinned cert.
 #   Extra config args  -> passed through, usually blank (e.g. --gpu-devices 2 to
-#                         cap to 2 cards, --cpu-workers 0 to disable CPU, or an
+#                         cap to 2 cards, --cpu-workers <N> to enable CPU, or an
 #                         explicit --tls-cert-sha256 override)
 #
-# This package targets NVIDIA rigs (GPU_NVIDIA) and defaults to the upstream
-# native CUDA engine (--cuda-gpu, v4.1.0+): no Vulkan/wgpu runtime needed. The
-# flag is added automatically unless the flight sheet already passes --cuda-gpu.
+# quanpool-miner is a high-performance quantus-miner build (v6, native CUDA by
+# default — no Vulkan/wgpu runtime needed). It carries a 5% miner dev fee. It
+# defaults to its own built-in pool, so --node-addr (from Pool URL) is REQUIRED
+# here to point it at this pool.
 
 quanminer_trim() {
     local value=$1
@@ -29,8 +28,8 @@ quanminer_trim() {
 miner_ver() {
     local directory version=""
     directory="/hive/miners/custom/${CUSTOM_NAME:-quanminer}"
-    if [[ -x "$directory/quantus-miner" ]]; then
-        version=$("$directory/quantus-miner" --version 2>/dev/null \
+    if [[ -x "$directory/quanpool-miner" ]]; then
+        version=$("$directory/quanpool-miner" --version 2>/dev/null \
             | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 | tr -d '\r')
     fi
     printf '%s\n' "${version:-${CUSTOM_VERSION:-unknown}}"
@@ -39,7 +38,7 @@ miner_ver() {
 miner_config_gen() {
     local config_file url template worker wallet pass line
     local -a args=() extra=()
-    local explicit_fp=0 explicit_metrics=0 explicit_cuda=0
+    local explicit_fp=0 explicit_metrics=0 explicit_mode=0
 
     [[ -n ${CUSTOM_URL:-} ]] || {
         echo "ERROR: no pool URL set in the HiveOS flight sheet" >&2
@@ -74,11 +73,11 @@ miner_config_gen() {
         case ${extra[i]} in
             --tls-cert-sha256|--tls-cert-sha256=*|--tls-cert-sha256-file|--tls-cert-sha256-file=*) explicit_fp=1 ;;
             --metrics-port|--metrics-port=*) explicit_metrics=1 ;;
-            --cuda-gpu) explicit_cuda=1 ;;
+            --mode|--mode=*) explicit_mode=1 ;;
         esac
     done
 
-    # quantus-miner takes exactly one node address; use the first pool URL.
+    # quanpool-miner takes exactly one node address; use the first pool URL.
     url=$(printf '%s' "$CUSTOM_URL" | tr ',;' '\n' | head -1)
     url=$(quanminer_trim "$url")
     url=${url#quic+udp://}
@@ -116,12 +115,12 @@ miner_config_gen() {
         fi
     fi
 
-    # h-stats.sh consumes this exact metrics port.
-    ((explicit_metrics)) || args+=(--metrics-port "${CUSTOM_API_PORT:-4067}")
+    # h-stats.sh consumes this exact metrics port (quanpool-miner /hive-stats).
+    ((explicit_metrics)) || args+=(--metrics-port "${CUSTOM_API_PORT:-9900}")
 
-    # Native CUDA engine by default (NVIDIA rigs): no Vulkan/wgpu runtime needed.
-    # Upstream quantus-miner v4.1.0+; skip if the flight sheet set it explicitly.
-    ((explicit_cuda)) || args+=(--cuda-gpu)
+    # Pool mining (share difficulty). quanpool-miner defaults to pool mode; set
+    # it explicitly unless the flight sheet already passed --mode.
+    ((explicit_mode)) || args+=(--mode pool)
 
     args+=("${extra[@]}")
 

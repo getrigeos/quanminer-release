@@ -1,12 +1,19 @@
-# quanminer — third-party Quantus quantus-miner for HiveOS
+# quanminer — high-performance quanpool-miner for HiveOS
 
-This package wraps the **unmodified third-party `quantus-miner`** (linux-x86_64,
-from https://github.com/Quantus-Network/quantus-miner/releases) with the
-HiveOS custom-miner integration scripts. The binary's SHA-256 is recorded in
-the release notes; verify it against the upstream release asset.
+This package wraps the **unmodified third-party `quanpool-miner` v6** (linux-x86_64)
+with the HiveOS custom-miner integration scripts, pointed at this pool. The
+binary's SHA-256 is recorded in the release notes; verify it against the official
+`quanpool-miner` download.
 
-quantus-miner talks **QUIC over UDP** to the pool. Standard TCP firewalls do
-not apply; make sure outbound UDP to the pool port is allowed.
+> ⚠️ **5% miner dev fee.** quanpool-miner is a much faster build (≈1.4 GH/s on an
+> RTX 5090 vs ≈0.81 GH/s stock) but carries a built-in 5% dev fee to its author.
+> It is usually still ahead net of the fee. For a fee-free miner use INVminer
+> (Stratum TLS). This build also defaults to its OWN pool, so this package always
+> sets `--node-addr` to this pool via the Pool URL field.
+
+quanpool-miner talks **QUIC over UDP** and uses **native CUDA** by default (no
+Vulkan). Standard TCP firewalls do not apply; make sure outbound UDP to the pool
+port is allowed.
 
 ## Flight sheet
 
@@ -18,21 +25,15 @@ not apply; make sure outbound UDP to the pool port is allowed.
 | Wallet and worker template | `%WAL%.%WORKER_NAME%` |
 | Pool URL | your pool's QUIC endpoint, e.g. `qminer.innovlab.cc:17601` |
 | Password | the pool's TLS certificate SHA-256 fingerprint (64 hex chars, from the pool's connection page) |
-| Extra config arguments | usually leave blank (uses all GPUs + CPU); e.g. `--gpu-devices 2` to cap cards, `--cpu-workers 0` for pure GPU |
+| Extra config arguments | usually blank (all GPUs, native CUDA); e.g. `--gpu-devices 1` to cap cards, `--cpu-workers <N>` to add CPU |
 
-The Password field is **required**: quantus-miner pins the pool's QUIC
-certificate by SHA-256 fingerprint instead of using CA certificates. Your
-pool's connection page publishes it. An `--tls-cert-sha256 <fp>` in Extra
-config arguments overrides the Password field.
+The Password field is **required**: quanpool-miner pins the pool's QUIC
+certificate by SHA-256 fingerprint instead of using CA certificates. Your pool's
+connection page publishes it. An `--tls-cert-sha256 <fp>` in Extra config
+arguments overrides the Password field.
 
-Hostnames in the Pool URL are resolved to an IP at miner start (the upstream
-binary only accepts `IP:PORT`).
-
-**Native CUDA (v4.1.0+):** on NVIDIA rigs the package adds `--cuda-gpu`
-automatically, so it runs the upstream native CUDA engine — no Vulkan/wgpu
-runtime to install. Put `--cuda-gpu` in Extra config arguments only if you want
-to set it explicitly. The miner uses QUIC over UDP; ensure outbound UDP to the
-pool port is open (networks that block UDP should use the TCP/Stratum miner).
+Hostnames in the Pool URL are resolved to an IP at miner start (the binary only
+accepts `IP:PORT`). HiveOS stats come from the miner's `/hive-stats` endpoint.
 
 ## InnovLab pool quick values
 

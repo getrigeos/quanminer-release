@@ -1,13 +1,21 @@
 # quanminer-release
 
-HiveOS packaging of the **third-party [`quantus-miner`](https://github.com/Quantus-Network/quantus-miner/releases)** (QUIC/UDP).
-The upstream project ships no HiveOS integration; this repository wraps the
-unmodified upstream linux-x86_64 binary with HiveOS custom-miner scripts
-(`h-config.sh` / `h-run.sh` / `h-stats.sh` / `h-manifest.conf`).
+HiveOS packaging of the **third-party high-performance `quanpool-miner`** (QUIC/UDP).
+This repository wraps the unmodified `quanpool-miner` linux-x86_64 binary with
+HiveOS custom-miner scripts (`h-config.sh` / `h-run.sh` / `h-stats.sh` /
+`h-manifest.conf`) and points it at this pool.
 
-**The miner binary is byte-identical to the upstream release asset** — its
-SHA-256 is published in every release here (`quantus-miner-linux-x86_64.sha256.upstream`)
-and can be verified against the upstream GitHub release.
+**The miner binary is byte-identical to the official `quanpool-miner` build**
+(`https://download.quanpool.com/quanpool-miner-6.0.0-linux-x86_64`) — its SHA-256
+is published in every release here (`quanpool-miner-linux-x86_64.sha256.upstream`)
+and can be verified against that download.
+
+> ⚠️ **quanpool-miner carries a built-in 5% miner dev fee** (it mines to its
+> author for a share of the time). It is a much faster build (≈1.4 GH/s on an
+> RTX 5090 vs ≈0.81 GH/s for the stock quantus-miner), so it is usually still
+> ahead net of the fee — but the fee is real. It also defaults to its **own**
+> pool, so this package always sets `--node-addr` to point it at our pool.
+> If you want a fee-free miner, use INVminer (Stratum TLS) instead.
 
 ## Use in HiveOS
 
@@ -21,22 +29,16 @@ Add a custom miner in the flight sheet:
 | Wallet and worker template | `%WAL%.%WORKER_NAME%` |
 | Pool URL | your pool's QUIC endpoint (e.g. `qminer.innovlab.cc:17601`) |
 | Password | the pool's TLS certificate SHA-256 fingerprint (64 hex) |
-| Extra config arguments | optional, e.g. `--cpu-workers 0` |
+| Extra config arguments | optional, e.g. `--gpu-devices 1`, or `--cpu-workers <N>` to add CPU |
 
-quantus-miner pins the pool certificate by fingerprint (no CA); the pool's
+quanpool-miner pins the pool certificate by fingerprint (no CA); the pool's
 connection page publishes it. Hostnames are resolved to an IP at start.
-
-**Native CUDA (v4.1.0+):** on NVIDIA rigs the package runs the upstream native
-CUDA engine (`--cuda-gpu`) automatically — no Vulkan/wgpu runtime to install.
-Pass `--cuda-gpu` yourself in Extra config arguments only to override, or add
-`--cpu-workers 0` for pure-GPU mining. The miner talks QUIC over UDP, so make
-sure outbound UDP to the pool port is allowed (restrictive ISPs that block UDP
-should use the pool's TCP/Stratum miner instead).
-
-See `packaging/hiveos/h-readme.md` (also shipped inside the package).
+Native CUDA is the default engine — no Vulkan/wgpu runtime to install. The miner
+talks QUIC over UDP, so ensure outbound UDP to the pool port is allowed
+(networks that block UDP should use the pool's TCP/Stratum miner instead).
 
 ## Build
 
 ```bash
-./scripts/package-hiveos-release.sh <upstream-quantus-miner-linux-x86_64> dist/
+./scripts/package-hiveos-release.sh <quanpool-miner-linux-x86_64> dist/
 ```
