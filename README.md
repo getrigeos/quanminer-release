@@ -6,7 +6,7 @@ HiveOS custom-miner scripts (`h-config.sh` / `h-run.sh` / `h-stats.sh` /
 `h-manifest.conf`) and points it at this pool.
 
 **The miner binary is byte-identical to the official `quanpool-miner` build**
-(`https://download.quanpool.com/quanpool-miner-6.0.0-linux-x86_64`) — its SHA-256
+(`https://download.quanpool.com/quanpool-miner-6.1.0-linux-x86_64`) — its SHA-256
 is published in every release here (`quanpool-miner-linux-x86_64.sha256.upstream`)
 and can be verified against that download.
 
