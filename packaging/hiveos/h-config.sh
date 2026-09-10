@@ -14,6 +14,10 @@
 #   Extra config args  -> passed through, usually blank (e.g. --gpu-devices 2 to
 #                         cap to 2 cards, --cpu-workers 0 to disable CPU, or an
 #                         explicit --tls-cert-sha256 override)
+#
+# This package targets NVIDIA rigs (GPU_NVIDIA) and defaults to the upstream
+# native CUDA engine (--cuda-gpu, v4.1.0+): no Vulkan/wgpu runtime needed. The
+# flag is added automatically unless the flight sheet already passes --cuda-gpu.
 
 quanminer_trim() {
     local value=$1
@@ -35,7 +39,7 @@ miner_ver() {
 miner_config_gen() {
     local config_file url template worker wallet pass line
     local -a args=() extra=()
-    local explicit_fp=0 explicit_metrics=0
+    local explicit_fp=0 explicit_metrics=0 explicit_cuda=0
 
     [[ -n ${CUSTOM_URL:-} ]] || {
         echo "ERROR: no pool URL set in the HiveOS flight sheet" >&2
@@ -70,6 +74,7 @@ miner_config_gen() {
         case ${extra[i]} in
             --tls-cert-sha256|--tls-cert-sha256=*|--tls-cert-sha256-file|--tls-cert-sha256-file=*) explicit_fp=1 ;;
             --metrics-port|--metrics-port=*) explicit_metrics=1 ;;
+            --cuda-gpu) explicit_cuda=1 ;;
         esac
     done
 
@@ -113,6 +118,11 @@ miner_config_gen() {
 
     # h-stats.sh consumes this exact metrics port.
     ((explicit_metrics)) || args+=(--metrics-port "${CUSTOM_API_PORT:-4067}")
+
+    # Native CUDA engine by default (NVIDIA rigs): no Vulkan/wgpu runtime needed.
+    # Upstream quantus-miner v4.1.0+; skip if the flight sheet set it explicitly.
+    ((explicit_cuda)) || args+=(--cuda-gpu)
+
     args+=("${extra[@]}")
 
     umask 077

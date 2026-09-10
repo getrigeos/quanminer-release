@@ -28,6 +28,12 @@ config arguments overrides the Password field.
 Hostnames in the Pool URL are resolved to an IP at miner start (the upstream
 binary only accepts `IP:PORT`).
 
+**Native CUDA (v4.1.0+):** on NVIDIA rigs the package adds `--cuda-gpu`
+automatically, so it runs the upstream native CUDA engine — no Vulkan/wgpu
+runtime to install. Put `--cuda-gpu` in Extra config arguments only if you want
+to set it explicitly. The miner uses QUIC over UDP; ensure outbound UDP to the
+pool port is open (networks that block UDP should use the TCP/Stratum miner).
+
 ## InnovLab pool quick values
 
 - Pool URL: `qminer.innovlab.cc:17601`

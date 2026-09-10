@@ -26,6 +26,13 @@ Add a custom miner in the flight sheet:
 quantus-miner pins the pool certificate by fingerprint (no CA); the pool's
 connection page publishes it. Hostnames are resolved to an IP at start.
 
+**Native CUDA (v4.1.0+):** on NVIDIA rigs the package runs the upstream native
+CUDA engine (`--cuda-gpu`) automatically — no Vulkan/wgpu runtime to install.
+Pass `--cuda-gpu` yourself in Extra config arguments only to override, or add
+`--cpu-workers 0` for pure-GPU mining. The miner talks QUIC over UDP, so make
+sure outbound UDP to the pool port is allowed (restrictive ISPs that block UDP
+should use the pool's TCP/Stratum miner instead).
+
 See `packaging/hiveos/h-readme.md` (also shipped inside the package).
 
 ## Build
